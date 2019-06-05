@@ -27,6 +27,9 @@ class Board extends React.Component {
       <Square
         data-row={row}
         data-col={col}
+        data_index={i}
+        active_cell={this.props.active_cell}
+        // data-isActive={this.props.squares[i].isActive}
         key={i}
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
