@@ -11,6 +11,17 @@ class Game extends React.Component {
           squares: Array(9).fill(null),
         },
       ],
+      movesIndex: {
+        0: [1, 1],
+        1: [1, 2],
+        2: [2, 3],
+        3: [2, 1],
+        4: [2, 2],
+        5: [2, 3],
+        6: [3, 1],
+        7: [3, 2],
+        8: [3, 3],
+      },
       stepNumber: 0,
       xIsNext: true,
     };
@@ -19,6 +30,8 @@ class Game extends React.Component {
   handleClick(i) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
+
+    console.log(current);
     const squares = current.squares.slice();
     if (calculateWinner(squares) || squares[i]) {
       return;
