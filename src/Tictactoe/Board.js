@@ -23,12 +23,13 @@ class Board extends React.Component {
   }
 
   renderSquare(i, row, col) {
+    const is_active_cell = this.props.active_cell == i ? true : false;
     return (
       <Square
         data-row={row}
         data-col={col}
         data_index={i}
-        active_cell={this.props.active_cell}
+        is_active_cell={is_active_cell}
         // data-isActive={this.props.squares[i].isActive}
         key={i}
         value={this.props.squares[i]}
