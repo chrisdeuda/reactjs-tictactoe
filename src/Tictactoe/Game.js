@@ -28,6 +28,9 @@ class Game extends React.Component {
       stepNumber: 0,
       xIsNext: true,
       activeCell: null,
+      boxes: {
+        0: false,
+      },
     };
   }
 
@@ -70,6 +73,23 @@ class Game extends React.Component {
   getCurrentSquare() {
     const history = this.state.history;
     return history[this.state.stepNumber];
+  }
+
+  initSquareStatus() {
+    let box = this.state.boxes;
+
+    console.log(typeof box);
+    for (let index = 0; index < 9; index++) {
+      box[index] = false;
+    }
+
+    this.setState({
+      boxes: box,
+    });
+  }
+
+  componentDidMount() {
+    this.initSquareStatus();
   }
 
   render() {
