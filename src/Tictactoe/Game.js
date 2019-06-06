@@ -39,9 +39,7 @@ class Game extends React.Component {
     const current = history[history.length - 1];
 
     const squares = current.squares.slice();
-    if (calculateWinner(squares) || squares[i]) {
-      return;
-    }
+
     squares[i] = this.state.xIsNext ? "X" : "O";
     this.setState({
       history: history.concat([
@@ -55,6 +53,14 @@ class Game extends React.Component {
       xIsNext: !this.state.xIsNext,
       activeCell: null,
     });
+
+    const winner = calculateWinner(squares);
+    if (winner) {
+      this.displayWinner(winner.player, winner.location);
+      console.log(winner);
+      return;
+    }
+
     this.initSquareStatus();
   }
   jumpTo(step) {
@@ -74,12 +80,25 @@ class Game extends React.Component {
       this.updateActiveCell(list);
     }, 300);
   }
+
+  displayWinner(player, lines) {
+    this.initSquareStatus();
+    setTimeout(() => {
+      let list = lines;
+      this.updateActiveCell(list);
+    }, 300);
+  }
   /**
    *
    * @param {*} square_list - array of index of cell to be updated
    */
   updateActiveCell(square_list) {
-    const boxes = this.state.boxes;
+    let boxes = this.state.boxes;
+
+    // Clear the boxes previous history
+    for (let index = 0; index < 9; index++) {
+      boxes[index] = false;
+    }
 
     for (let index = 0; index < square_list.length; index++) {
       const element = square_list[index];
@@ -140,8 +159,7 @@ class Game extends React.Component {
     let status;
     if (winner) {
       status = `Winner: ${winner.player}`;
-      console.log(winner);
-      // Render the Red Marks
+      //@NOTE Avoid updating states(setState here), 'cause the component will always render
     } else {
       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
     }
