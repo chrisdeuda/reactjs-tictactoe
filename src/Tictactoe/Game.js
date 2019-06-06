@@ -55,19 +55,41 @@ class Game extends React.Component {
       xIsNext: !this.state.xIsNext,
       activeCell: null,
     });
+    this.initSquareStatus();
   }
   jumpTo(step) {
     this.setState({
       stepNumber: step,
       xIsNext: step % 2 === 0,
     });
+
     let parent = this;
+    this.initSquareStatus();
 
     setTimeout(() => {
-      parent.setState({
-        activeCell: parent.getCurrentSquare().index,
-      });
+      const activeCell = parent.getCurrentSquare().index;
+      let list = [];
+
+      list.push(activeCell);
+      this.updateActiveCell(list);
     }, 300);
+  }
+  /**
+   *
+   * @param {*} square_list - array of index of cell to be updated
+   */
+  updateActiveCell(square_list) {
+    const boxes = this.state.boxes;
+
+    for (let index = 0; index < square_list.length; index++) {
+      const element = square_list[index];
+      if (boxes.hasOwnProperty(element)) {
+        boxes[element] = true;
+      }
+    }
+    this.setState({
+      boxes: boxes,
+    });
   }
 
   getCurrentSquare() {
@@ -78,7 +100,6 @@ class Game extends React.Component {
   initSquareStatus() {
     let box = this.state.boxes;
 
-    console.log(typeof box);
     for (let index = 0; index < 9; index++) {
       box[index] = false;
     }
@@ -118,7 +139,9 @@ class Game extends React.Component {
 
     let status;
     if (winner) {
-      status = `Winner: ${winner}`;
+      status = `Winner: ${winner.player}`;
+      console.log(winner);
+      // Render the Red Marks
     } else {
       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
     }
@@ -129,6 +152,7 @@ class Game extends React.Component {
           <Board
             active_cell={this.state.activeCell}
             squares={current.squares}
+            boxes={this.state.boxes}
             onClick={i => this.handleClick(i)}
           />
         </div>
