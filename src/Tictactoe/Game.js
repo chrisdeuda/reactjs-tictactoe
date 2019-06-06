@@ -9,36 +9,127 @@ class Game extends React.Component {
       history: [
         {
           squares: Array(9).fill(null),
+          index: null,
+          isActive: false,
         },
       ],
+      movesIndex: {
+        9: [0, 0],
+        0: [1, 1],
+        1: [1, 2],
+        2: [2, 3],
+        3: [2, 1],
+        4: [2, 2],
+        5: [2, 3],
+        6: [3, 1],
+        7: [3, 2],
+        8: [3, 3],
+      },
       stepNumber: 0,
       xIsNext: true,
+      activeCell: null,
+      boxes: {
+        0: false,
+      },
     };
   }
 
   handleClick(i) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
+
     const squares = current.squares.slice();
-    if (calculateWinner(squares) || squares[i]) {
-      return;
-    }
+
     squares[i] = this.state.xIsNext ? "X" : "O";
     this.setState({
       history: history.concat([
         {
           squares: squares,
+          index: i,
+          isActive: false,
         },
       ]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
+      activeCell: null,
     });
+
+    const winner = calculateWinner(squares);
+    if (winner) {
+      this.displayWinner(winner.player, winner.location);
+      console.log(winner);
+      return;
+    }
+
+    this.initSquareStatus();
   }
   jumpTo(step) {
     this.setState({
       stepNumber: step,
       xIsNext: step % 2 === 0,
     });
+
+    let parent = this;
+    this.initSquareStatus();
+
+    setTimeout(() => {
+      const activeCell = parent.getCurrentSquare().index;
+      let list = [];
+
+      list.push(activeCell);
+      this.updateActiveCell(list);
+    }, 300);
+  }
+
+  displayWinner(player, lines) {
+    this.initSquareStatus();
+    setTimeout(() => {
+      let list = lines;
+      this.updateActiveCell(list);
+    }, 300);
+  }
+  /**
+   *
+   * @param {*} square_list - array of index of cell to be updated
+   */
+  updateActiveCell(square_list) {
+    let boxes = this.state.boxes;
+
+    // Clear the boxes previous history
+    for (let index = 0; index < 9; index++) {
+      boxes[index] = false;
+    }
+
+    for (let index = 0; index < square_list.length; index++) {
+      const element = square_list[index];
+      if (boxes.hasOwnProperty(element)) {
+        boxes[element] = true;
+      }
+    }
+    this.setState({
+      boxes: boxes,
+    });
+  }
+
+  getCurrentSquare() {
+    const history = this.state.history;
+    return history[this.state.stepNumber];
+  }
+
+  initSquareStatus() {
+    let box = this.state.boxes;
+
+    for (let index = 0; index < 9; index++) {
+      box[index] = false;
+    }
+
+    this.setState({
+      boxes: box,
+    });
+  }
+
+  componentDidMount() {
+    this.initSquareStatus();
   }
 
   render() {
@@ -46,18 +137,29 @@ class Game extends React.Component {
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
 
-    const moves = history.map((step, move) => {
-      const desc = move ? "Go to move #" + move : "Go to game start";
+    let rowColMoves = this.state.movesIndex;
+
+    const moves = history.map((step, move, index) => {
+      let colRow = rowColMoves[step.index];
+      const desc = move
+        ? `Go to move #${move} ( ${colRow} )`
+        : "Go to game start";
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc} </button>
+          <button
+            date-row-col-move={step.index}
+            onClick={() => this.jumpTo(move)}
+          >
+            {desc}{" "}
+          </button>
         </li>
       );
     });
 
     let status;
     if (winner) {
-      status = "Winner: " + winner;
+      status = `Winner: ${winner.player}`;
+      //@NOTE Avoid updating states(setState here), 'cause the component will always render
     } else {
       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
     }
@@ -65,7 +167,12 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div className="game-board">
-          <Board squares={current.squares} onClick={i => this.handleClick(i)} />
+          <Board
+            active_cell={this.state.activeCell}
+            squares={current.squares}
+            boxes={this.state.boxes}
+            onClick={i => this.handleClick(i)}
+          />
         </div>
         <div className="game-info">
           <div>{status}</div>

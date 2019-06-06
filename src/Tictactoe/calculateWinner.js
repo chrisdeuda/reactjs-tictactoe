@@ -1,3 +1,8 @@
+/**
+ *
+ * It returns who's player is winner and what the values of the lines
+ * @param {*} squares {player: O|X, location: [0,0,0]}
+ */
 function calculateWinner(squares) {
   const lines = [
     [0, 1, 2],
@@ -12,7 +17,11 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      let result = {
+        player: squares[a],
+        location: lines[i],
+      };
+      return result;
     }
   }
   return null;

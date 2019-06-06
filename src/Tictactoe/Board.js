@@ -2,9 +2,36 @@ import React, { Component } from "react";
 import Square from "./Square";
 
 class Board extends React.Component {
-  renderSquare(i) {
+  createBox() {
+    let boxes = [];
+    let index = 0;
+
+    for (let col = 0; col < 3; col++) {
+      let box = [];
+
+      for (let row = 0; row < 3; row++) {
+        box.push(this.renderSquare(index, row, col));
+        index++;
+      }
+      boxes.push(
+        <div key={col} className="board-row">
+          {box}
+        </div>
+      );
+    }
+    return boxes;
+  }
+
+  renderSquare(i, row, col) {
+    const is_active_cell = this.props.active_cell == i ? true : false;
     return (
       <Square
+        data-row={row}
+        data-col={col}
+        data_index={i}
+        is_active_cell={this.props.boxes[i]}
+        // data-isActive={this.props.squares[i].isActive}
+        key={i}
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
       />
@@ -12,25 +39,7 @@ class Board extends React.Component {
   }
 
   render() {
-    return (
-      <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    );
+    return <div>{this.createBox()}</div>;
   }
 }
 
