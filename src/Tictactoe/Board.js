@@ -29,7 +29,7 @@ class Board extends React.Component {
         data-row={row}
         data-col={col}
         data_index={i}
-        is_active_cell={is_active_cell}
+        is_active_cell={this.props.boxes[i]}
         // data-isActive={this.props.squares[i].isActive}
         key={i}
         value={this.props.squares[i]}
